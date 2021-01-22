@@ -1,0 +1,27 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	background-color: lightslategrey;
+}
+th {
+	border: 1px solid #999;
+	padding: 0.3rem;
+	text-align: center;
+	background: linear-gradient(to top, #660066 0%, #666699 100%);
+	color: lightgray;
+	border-radius: 7%;
+}
+td {
+	border: 1px solid #999;
+	padding: 0.3rem;
+	text-align: center;
+	background: lightskyblue;
+	border-radius: 7%;
+}
+table {
+	width: 85vw;
+	height: 60vh;
+	margin: auto;
+}
