@@ -1,5 +1,6 @@
-const tableRowArray = [];
-const numberOfRowsToGenerate = 60;
+// Using let to recreate upon calling generateRows()
+let tableRowArray = [];
+const initialRows = 10;
 const topicOptions = [
 	"HTML",
 	"CSS",
@@ -44,7 +45,7 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/* The following for loop creates and adds new objects to the tableRowArray, assigning properties according to the following:
+/* The following function creates and adds new objects to the tableRowArray (parameter is the number), assigning properties according to the following:
 -startedAt: will be a random date from January 10th 2021 aka preCourse t=0
 -finishedAt: will be startedAt + 1-21 hours + 0-59 minutes (random)
 -totalTime: will be a float limited to 2 decimals representing finishedAt - startedAt in hours
@@ -53,81 +54,102 @@ function getRandomInt(min, max) {
 -tasksFinishedPercent: will be the percentage of finished tasks
 -topic: will be the topic of the tasks, which is chosen randomly from 10 pre-set values (see topicOptions array for reference)
  */
-for (let i = 0; i < numberOfRowsToGenerate; i++) {
-	tableRowArray[i] = {
-		startedAt: randomDate(new Date(2021, 0, 10), new Date()),
-		finishedAt: undefined,
-		totalTime: undefined,
-		tasksGiven: getRandomInt(5, 35),
-		tasksFinished: undefined,
-		tasksFinishedPrecent: undefined,
-		topic: topicOptions[getRandomInt(0, topicOptions.length - 1)],
-	};
-
-	/* The reason I assign finishedAt, totalTime, tasksFinished and tasksFinishedPercent  properties below is that 'this' refers to the global object until the object is declared which means that I cannot access its properties inside of declaration '{}'. I could change these 2 properties into methods and use 'this' inside of declaration '{}' but i prefer to do it this way. */
-	tableRowArray[i].finishedAt = new Date(
-		tableRowArray[i].startedAt.getTime() + milliseconds(getRandomInt(1, 20), getRandomInt(0, 59), 0)
-	);
-	tableRowArray[i].totalTime = (
-		msToHours(tableRowArray[i].finishedAt.getTime()) -
-		msToHours(tableRowArray[i].startedAt.getTime())
-	).toFixed(2);
-	tableRowArray[i].tasksFinished = getRandomInt(0, tableRowArray[i].tasksGiven);
-	tableRowArray[i].tasksFinishedPrecent = Math.floor(
-		(tableRowArray[i].tasksFinished * 100) / tableRowArray[i].tasksGiven
-	);
-}
-//console.log(tableRowArray); // For Reference
-
-// Initialize table element with an id of "tbl", append it as a child of <body>.
-const myTable = document.createElement("table");
-myTable.setAttribute("id", "tbl");
-document.body.appendChild(myTable);
-
-/* The following loop runs through the objects inside of tableRowArray, assigning each object(row) to a <tr> element in html which is then appended to the table as its child. For each <tr> there is a nested for in loop which runs through each rows' properties, assigning them to created <td>'s which are appended as children to the <tr>'s.*/
-for (const tr of tableRowArray) {
-	const trIndex = tableRowArray.indexOf(tr);
-
-	//Create header's row
-	if (trIndex === 0) {
-		headersRow = document.createElement("tr");
-		document.getElementById("tbl").appendChild(headersRow);
-		headersRow.setAttribute("id", "headersRow");
+function generateRows(numberOfRowsToGenerate) {
+	// If this function is called after page load I will create a new array and new table for it.
+	if (tableRowArray.length > 0) {
+		tableRowArray = [];
 	}
 
-	trElement = document.createElement("tr");
-	document.getElementById("tbl").appendChild(trElement);
-	trElement.setAttribute("id", "row" + trIndex);
+	for (let i = 0; i < numberOfRowsToGenerate; i++) {
+		tableRowArray[i] = {
+			startedAt: randomDate(new Date(2021, 0, 10), new Date()),
+			finishedAt: undefined,
+			totalTime: undefined,
+			tasksGiven: getRandomInt(5, 35),
+			tasksFinished: undefined,
+			tasksFinishedPrecent: undefined,
+			topic: topicOptions[getRandomInt(0, topicOptions.length - 1)],
+		};
 
-	let countForHeaders = 0;
-	for (const prop in tableRowArray[trIndex]) {
-		if (Object.hasOwnProperty.call(tableRowArray[trIndex], prop)) {
-			/*  Create <th> (Headers)*/
-			if (trIndex === 0) {
-				const th = prop;
-				thElement = document.createElement("th");
-				document.getElementById("headersRow").appendChild(thElement);
-				thElement.innerText = tableHeaders[countForHeaders++];
-			}
+		/* The reason I assign finishedAt, totalTime, tasksFinished and tasksFinishedPercent  properties below is that 'this' refers to the global object until the object is declared which means that I cannot access its properties inside of declaration '{}'. I could change these 2 properties into methods and use 'this' inside of declaration '{}' but i prefer to do it this way. */
+		tableRowArray[i].finishedAt = new Date(
+			tableRowArray[i].startedAt.getTime() +
+				milliseconds(getRandomInt(1, 20), getRandomInt(0, 59), 0)
+		);
+		tableRowArray[i].totalTime = (
+			msToHours(tableRowArray[i].finishedAt.getTime()) -
+			msToHours(tableRowArray[i].startedAt.getTime())
+		).toFixed(2);
+		tableRowArray[i].tasksFinished = getRandomInt(0, tableRowArray[i].tasksGiven);
+		tableRowArray[i].tasksFinishedPrecent = Math.floor(
+			(tableRowArray[i].tasksFinished * 100) / tableRowArray[i].tasksGiven
+		);
+	}
+	console.log(tableRowArray); // For Reference
+}
 
-			/* console.log(trIndex);
+/* The following function creates all of the html for the table. This is explained in more detail inside the function. */
+function createTable() {
+	/* The following if statement checks if a table has already been created. If so, it deletes it to create a new one. */
+	if (document.getElementById("tbl")) {
+		document.getElementById("tbl").remove();
+	}
+
+	// Initialize table element with an id of "tbl", append it as a child of <body>.
+	const myTable = document.createElement("table");
+	myTable.setAttribute("id", "tbl");
+	document.body.appendChild(myTable);
+
+	/* The following loop runs through the objects inside of tableRowArray, assigning each object(row) to a <tr> element in html which is then appended to the table as its child. For each <tr> there is a nested for in loop which runs through each rows' properties, assigning them to created <td>'s which are appended as children to the <tr>'s.*/
+	for (const tr of tableRowArray) {
+		const trIndex = tableRowArray.indexOf(tr);
+
+		//Create header's row
+		if (trIndex === 0) {
+			headersRow = document.createElement("tr");
+			document.getElementById("tbl").appendChild(headersRow);
+			headersRow.setAttribute("id", "headersRow");
+		}
+
+		trElement = document.createElement("tr");
+		document.getElementById("tbl").appendChild(trElement);
+		trElement.setAttribute("id", "row" + trIndex);
+
+		let countForHeaders = 0;
+		for (const prop in tableRowArray[trIndex]) {
+			if (Object.hasOwnProperty.call(tableRowArray[trIndex], prop)) {
+				/*  Create <th> (Headers)*/
+				if (trIndex === 0) {
+					const th = prop;
+					thElement = document.createElement("th");
+					document.getElementById("headersRow").appendChild(thElement);
+					thElement.innerText = tableHeaders[countForHeaders++];
+				}
+
+				/* console.log(trIndex);
 			console.log(tableRowArray[trIndex][prop]); */
-			const td = tableRowArray[trIndex][prop];
+				const td = tableRowArray[trIndex][prop];
 
-			tdElement = document.createElement("td");
-			document.getElementById("row" + trIndex).appendChild(tdElement);
-			tdElement.setAttribute("id", prop + "-col" + trIndex);
-			tdElement.innerText = td;
+				tdElement = document.createElement("td");
+				document.getElementById("row" + trIndex).appendChild(tdElement);
+				tdElement.setAttribute("id", prop + "-col" + trIndex);
+				tdElement.innerText = td;
 
-			if (prop === "startedAt" || prop === "finishedAt") {
-				tdElement.innerText =
-					weekDays[td.getDay()] + " " + td.toTimeString().split(" ")[0].slice(0, 5);
-			} else if (prop === "tasksFinishedPrecent") {
-				tdElement.innerText = td + "%";
-				tdElement.style.background = `hsl(145, ${30 + td / 2.5}%, ${90 - td / 2}%)`;
-			} else if (prop === "totalTime") {
-				tdElement.style.background = `hsl(0, ${65 + td}%, ${85 - td}%)`;
+				if (prop === "startedAt" || prop === "finishedAt") {
+					tdElement.innerText =
+						weekDays[td.getDay()] + " " + td.toTimeString().split(" ")[0].slice(0, 5);
+				} else if (prop === "tasksFinishedPrecent") {
+					tdElement.innerText = td + "%";
+					tdElement.style.background = `hsl(145, ${30 + td / 2.5}%, ${90 - td / 2}%)`;
+				} else if (prop === "totalTime") {
+					tdElement.style.background = `hsl(0, ${65 + td}%, ${85 - td}%)`;
+				}
 			}
 		}
 	}
 }
+
+// Use generateRows() to create initial array
+generateRows(initialRows);
+// Use createTable() to create html table from initial array
+createTable();

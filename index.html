@@ -7,6 +7,14 @@
 		<link rel="stylesheet" type="text/css" href="tableStyle.css" />
 	</head>
 	<body>
+		<div class="top-div">
+			<label for="quantity">Current Number Of Rows:</label>
+			<input type="number" id="quantity" name="quantity" min="1" max="100" value="10" />
+			<button onclick="generateRows(document.getElementById('quantity').value); createTable();">
+				Change Row Number
+			</button>
+		</div>
+
 		<script src="./table.js"></script>
 	</body>
 </html>
