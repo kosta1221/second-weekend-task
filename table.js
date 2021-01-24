@@ -133,7 +133,6 @@ function createTable() {
 				tdElement = document.createElement("td");
 				document.getElementById("row" + trIndex).appendChild(tdElement);
 				tdElement.setAttribute("id", prop + "-col" + trIndex);
-				tdElement.innerText = td;
 
 				if (prop === "startedAt" || prop === "finishedAt") {
 					tdElement.innerText =
@@ -143,6 +142,9 @@ function createTable() {
 					tdElement.style.background = `hsl(145, ${30 + td / 2.5}%, ${90 - td / 2}%)`;
 				} else if (prop === "totalTime") {
 					tdElement.style.background = `hsl(0, ${65 + td}%, ${85 - td}%)`;
+					tdElement.innerText = td;
+				} else {
+					tdElement.innerText = td;
 				}
 			}
 		}
