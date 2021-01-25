@@ -55,3 +55,7 @@ input {
 	margin-top: 3vh;
 	font-weight: bold;
 }
+label {
+	text-decoration: underline;
+	font-size: 1.75rem;
+}
